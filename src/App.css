@@ -34,6 +34,11 @@
   height: 200px;
 }
 
+.Car-Input-Output {
+  border: 1px solid;
+  padding: 100px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

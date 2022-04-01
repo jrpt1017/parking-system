@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent } from '@mui/material';
+import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 import { makeStyles } from '@mui/material/styles';
 import './App.css';
 
@@ -49,21 +49,23 @@ const App = () => {
         <p>EP: {entryPoint}</p>
         <p>SLOT: {slot}</p>
         <p>Car parked: {plateNumber}</p>
-        <InputLabel id="demo-simple-select-standard-label">Size</InputLabel>
         {isDone ? (
           <p>Size: {size}</p>
         ) : (
-          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-            <Select
-              value={size}
-              onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
-              label="Size"
-            >
-              <MenuItem value="SP">SP</MenuItem>
-              <MenuItem value="MP">MP</MenuItem>
-              <MenuItem value="LP">LP</MenuItem>
-            </Select>
-          </FormControl>
+          <>
+            <InputLabel id="demo-simple-select-standard-label">Size</InputLabel>
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+              <Select
+                value={size}
+                onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
+                label="Size"
+              >
+                <MenuItem value="SP">SP</MenuItem>
+                <MenuItem value="MP">MP</MenuItem>
+                <MenuItem value="LP">LP</MenuItem>
+              </Select>
+            </FormControl>
+          </>
         )}
       </Box>
     )
@@ -93,6 +95,49 @@ const App = () => {
       </>
     );
   }
+
+  const CheckInCar = () => {
+    return (
+      <Box className='Car-Input-Output'>
+        <Typography>Park a Car</Typography>
+        <TextField id="outlined-basic" label="Car Plate #" variant="outlined" />
+        <InputLabel id="demo-simple-select-standard-label">Car Size</InputLabel>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <Select
+            // value={size}
+            // onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
+            label="Size"
+          >
+            <MenuItem value="SP">SP</MenuItem>
+            <MenuItem value="MP">MP</MenuItem>
+            <MenuItem value="LP">LP</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+    )
+  };
+
+  const CheckOutCar = () => {
+    return (
+      <Box className='Car-Input-Output'>
+        <Typography>Unpark a Car</Typography>
+        <TextField id="outlined-basic" label="Car Plate #" variant="outlined" />
+        <TextField id="outlined-basic" label="Hours Parked" variant="outlined" />
+        <InputLabel id="demo-simple-select-standard-label">Car Size</InputLabel>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <Select
+            // value={size}
+            // onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
+            label="Size"
+          >
+            <MenuItem value="SP">SP</MenuItem>
+            <MenuItem value="MP">MP</MenuItem>
+            <MenuItem value="LP">LP</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+    )
+  };
 
   React.useEffect(() => {
     // Init parking
@@ -150,6 +195,10 @@ const App = () => {
       >
         {isDone ? 'Edit Parking Map' : 'Create Parking Map'}
       </Button>
+      <Box display="flex" justifyContent="space-evenly" style={{ marginTop: '100px' }}>
+        <CheckInCar />
+        <CheckOutCar />
+      </Box>
     </div>
   );
 }
