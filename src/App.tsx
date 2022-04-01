@@ -19,7 +19,8 @@ interface IInput {
 interface IOutput {
   plateNumber: string,
   carSize: CarSize | undefined,
-  hours: number,
+  hours: number | undefined,
+  parkingSlotSize: ParkingSlotSize | undefined,
 }
 
 interface IParking extends IParkingSlot {
@@ -50,8 +51,11 @@ const App = () => {
   const [output, setOutput] = React.useState<IOutput>({
     plateNumber: '',
     carSize: undefined,
-    hours: 0,
+    hours: undefined,
+    parkingSlotSize: undefined,
   });
+
+  const [totalPrice, setTotalPrice] = React.useState(0)
 
   const handleSetEntryPoint = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setEntryPoint(Number(e.target.value));
@@ -241,6 +245,7 @@ const App = () => {
     });
     const newOutput = {
       ...output,
+      parkingSlotSize: findCar?.size,
       plateNumber: findCar?.plateNumber,
     } as IOutput;
     setOutput(newOutput);
@@ -255,9 +260,35 @@ const App = () => {
     setOutput(newOutput);
   }
 
-  React.useEffect(() => {
-    console.log(output);
-  }, [output])
+  const getExceedingPricePerHour = () => {
+    switch (output.parkingSlotSize) {
+      case 'SP':
+        return 20;
+      case 'MP':
+        return 60;
+      case 'LP':
+        return 100;
+      default: return 20;
+    }
+  };
+
+  const handleCheckOutCar = () => {
+    const flatRate = 40;
+    const pricePerHr = getExceedingPricePerHour();
+    let price = flatRate;
+    if (output.hours! > 24) {
+      // Charge 5000;
+      price += 5000;
+      const exceedingHours = output.hours! % 24 === 0 ? 1 : output.hours! % 24;
+      price = price + (pricePerHr * exceedingHours);
+    } else {
+      if (output.hours! > 3) {
+        const exceededHours = output.hours! - 3;
+        price = price + (pricePerHr * exceededHours);
+      }
+    }
+    setTotalPrice(price);
+  };
 
   const CheckOutCar = () => {
     const parkedCars = parking.filter((item) => {
@@ -265,12 +296,12 @@ const App = () => {
     });
     return (
       <Box className='Car-Input-Output'>
-        <Typography className="InputOutputLabels" variant="h4">Checkout a Car</Typography>
+        <Typography className="InputOutputLabels" variant="h4">Unpark a Car</Typography>
         <Box display="flex" gap="10px" sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
-            <InputLabel>Choose Car</InputLabel>
+            <InputLabel>Choose Car Plate #</InputLabel>
             <Select
-              value={input.carSize}
+              value={output.plateNumber}
               onChange={(e) => { return setOutputValues(e as unknown as SelectChangeEvent<IOutput>) }}
               label="car"
             >
@@ -295,7 +326,8 @@ const App = () => {
               />
             </>
           ) : ''}
-          <Button variant="contained" onClick={() => { return handleParkACar(); }}>Checkout Car</Button>
+          <Button variant="contained" onClick={() => { return handleCheckOutCar(); }}>Checkout Car</Button>
+          <Typography textAlign="start">Total Price: Php. {totalPrice}</Typography>
         </Box>
       </Box>
     )
