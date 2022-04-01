@@ -3,11 +3,17 @@ import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Sele
 import { makeStyles } from '@mui/material/styles';
 import './App.css';
 
-
 type ParkingSlotSize = 'SP' | 'MP' | 'LP';
+type CarSize = 'S' | 'M' | 'L';
 interface IParkingSlot {
   entryPoint: number,
   slot: number,
+}
+
+interface IInput {
+  plateNumber: string,
+  carSize: string,
+  entryPoint: number,
 }
 
 interface IParking extends IParkingSlot {
@@ -25,6 +31,14 @@ const App = () => {
   const [parking, setParking] = React.useState<Array<IParking>>([]);
   const [isClicked, setIsClicked] = React.useState(false);
   const [isDone, setIsDone] = React.useState(false);
+  const [nearestSlot, setNearestSlot] = React.useState<undefined | IParking>(undefined);
+
+  // Input states
+  const [input, setInput] = React.useState<IInput>({
+    plateNumber: '',
+    carSize: '',
+    entryPoint: 0,
+  });
 
   const handleSetEntryPoint = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setEntryPoint(Number(e.target.value));
@@ -43,12 +57,16 @@ const App = () => {
   };
 
   const ParkingSlot: React.FC<IParking> = (props: IParking) => {
-    const { entryPoint, slot, plateNumber, parkingId, size } = props;
+    const { entryPoint, slot, plateNumber, parkingId, size, isOccupied } = props;
+    const boxClass = `Parking-Slot-Box ${isOccupied ? 'Occupied' : ''}`
+    console.log(parkingId, isOccupied);
     return (
-      <Box className='Parking-Slot-Box'>
-        <p>EP: {entryPoint}</p>
-        <p>SLOT: {slot}</p>
-        <p>Car parked: {plateNumber}</p>
+      <Box className={boxClass}>
+        <div style={{ marginBottom: '35px' }}>
+          <Typography style={{ position: 'absolute', left: 0 }}>EP: {entryPoint}</Typography>
+          <Typography style={{ position: 'absolute', right: 0 }}>Slot: {slot}</Typography>
+        </div>
+        <Typography>Car parked: {plateNumber}</Typography>
         {isDone ? (
           <p>Size: {size}</p>
         ) : (
@@ -83,6 +101,7 @@ const App = () => {
             size={parkingArea.size}
             plateNumber={parkingArea.plateNumber}
             parkingId={parkingArea.parkingId}
+            isOccupied={parkingArea.isOccupied}
           />
         </React.Fragment>
       )
@@ -96,23 +115,110 @@ const App = () => {
     );
   }
 
+  const getAvailableParking = () => {
+    switch (input.carSize) {
+      case 'S':
+        return ['SP', 'MP', 'LP'];
+      case 'M':
+        return ['MP', 'LP'];
+      case 'L':
+        return ['LP']
+      default:
+        return ['SP', 'MP', 'LP'];
+    }
+  };
+
+  const handleFindNearestSlot = () => {
+    // 1. Filter parking slots depending on car size
+    /*
+      S - SP|MP|LP
+      M - MP|LP
+      L - LP
+    */
+    const filteredParkingSlots = parking.filter((item) => {
+      return getAvailableParking().includes(item.size);
+    });
+    const firstIndex = filteredParkingSlots.findIndex((item) => {
+      return item.entryPoint === Number(input.entryPoint);
+    });
+    const parkingCopy = [...filteredParkingSlots];
+    const emptySlot = parkingCopy.slice(firstIndex).find((item) => {
+      return item.isOccupied === false;
+    });
+    setNearestSlot(emptySlot);
+  };
+
+  const handleParkACar = () => {
+    // Update values of parking variable. Set parking.
+    const newParking = [...parking];
+    const findParkingSlot = newParking.find((item) => {
+      return nearestSlot!.parkingId === item.parkingId;
+    });
+    findParkingSlot!.plateNumber = input.plateNumber;
+    findParkingSlot!.isOccupied = true;
+    setParking([...newParking])
+    setInput({
+      plateNumber: '',
+      carSize: '',
+      entryPoint: 0,
+    });
+  };
+
+  const setInputValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<ParkingSlotSize>) => {
+    const newInput = {
+      ...input,
+      [e.target.name]: e.target.value,
+    };
+    setInput(newInput);
+  };
+
   const CheckInCar = () => {
     return (
       <Box className='Car-Input-Output'>
-        <Typography>Park a Car</Typography>
-        <TextField id="outlined-basic" label="Car Plate #" variant="outlined" />
-        <InputLabel id="demo-simple-select-standard-label">Car Size</InputLabel>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <Select
-            // value={size}
-            // onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
-            label="Size"
-          >
-            <MenuItem value="SP">SP</MenuItem>
-            <MenuItem value="MP">MP</MenuItem>
-            <MenuItem value="LP">LP</MenuItem>
-          </Select>
-        </FormControl>
+        <Typography className="InputOutputLabels" variant="h4">Park a Car</Typography>
+        <Box display="flex" flexDirection="column" gap="10px">
+          <Box display="flex" flexDirection="row" gap="10px">
+            <TextField
+              name="entryPoint"
+              label="Entry point"
+              variant="outlined"
+              onChange={(e) => { return setInputValues(e) }}
+              value={input.entryPoint}
+            />
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+                <InputLabel>Car Size</InputLabel>
+                <Select
+                  name="carSize"
+                  value={input.carSize}
+                  onChange={(e) => { return setInputValues(e as unknown as SelectChangeEvent<ParkingSlotSize>) }}
+                  label="Size"
+                >
+                  <MenuItem value="S">S</MenuItem>
+                  <MenuItem value="M">M</MenuItem>
+                  <MenuItem value="L">L</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Button variant="outlined" onClick={() => { return handleFindNearestSlot(); }}>Find Nearest Slot</Button>
+          </Box>
+          {nearestSlot ? (
+            <>
+              <Typography>Parking EP: {nearestSlot?.entryPoint}</Typography>
+              <Typography>Parking Slot: {nearestSlot?.slot}</Typography>
+              <TextField
+                name="plateNumber"
+                value={input.plateNumber}
+                id="outlined-basic"
+                label="Car Plate #"
+                variant="outlined"
+                onChange={(e) => { return setInputValues(e) }}
+              />
+            </>
+          ) : ''}
+
+          <Button variant="contained" onClick={() => { return handleParkACar(); }}>Submit</Button>
+        </Box>
       </Box>
     )
   };
@@ -120,14 +226,12 @@ const App = () => {
   const CheckOutCar = () => {
     return (
       <Box className='Car-Input-Output'>
-        <Typography>Unpark a Car</Typography>
+        <Typography className="InputOutputLabels" variant="h4">Checkout a Car</Typography>
         <TextField id="outlined-basic" label="Car Plate #" variant="outlined" />
         <TextField id="outlined-basic" label="Hours Parked" variant="outlined" />
         <InputLabel id="demo-simple-select-standard-label">Car Size</InputLabel>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
-            // value={size}
-            // onChange={(e) => { return handleChangeParkingSize(parkingId, e) }}
             label="Size"
           >
             <MenuItem value="SP">SP</MenuItem>
@@ -196,8 +300,12 @@ const App = () => {
         {isDone ? 'Edit Parking Map' : 'Create Parking Map'}
       </Button>
       <Box display="flex" justifyContent="space-evenly" style={{ marginTop: '100px' }}>
-        <CheckInCar />
-        <CheckOutCar />
+        {isDone ? (
+          <>
+            <CheckInCar />
+            <CheckOutCar />
+          </>
+        ) : ''}
       </Box>
     </div>
   );

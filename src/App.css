@@ -29,14 +29,25 @@
 }
 
 .Parking-Slot-Box {
-  border: 1px solid;
+  border: 5px solid green;
   width: 200px;
   height: 200px;
+  position: relative;
+}
+
+.Occupied {
+  border: 5px solid red;
 }
 
 .Car-Input-Output {
-  border: 1px solid;
+  position: relative;
+  border: 5px solid;
   padding: 100px;
+}
+
+.InputOutputLabels {
+  position: absolute;
+  top: 20px;
 }
 
 @keyframes App-logo-spin {
