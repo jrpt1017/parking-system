@@ -12,8 +12,14 @@ interface IParkingSlot {
 
 interface IInput {
   plateNumber: string,
-  carSize: string,
+  carSize: CarSize | undefined,
   entryPoint: number,
+}
+
+interface IOutput {
+  plateNumber: string,
+  carSize: CarSize | undefined,
+  hours: number,
 }
 
 interface IParking extends IParkingSlot {
@@ -36,8 +42,15 @@ const App = () => {
   // Input states
   const [input, setInput] = React.useState<IInput>({
     plateNumber: '',
-    carSize: '',
+    carSize: undefined,
     entryPoint: 0,
+  });
+
+  // Output
+  const [output, setOutput] = React.useState<IOutput>({
+    plateNumber: '',
+    carSize: undefined,
+    hours: 0,
   });
 
   const handleSetEntryPoint = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,7 +72,6 @@ const App = () => {
   const ParkingSlot: React.FC<IParking> = (props: IParking) => {
     const { entryPoint, slot, plateNumber, parkingId, size, isOccupied } = props;
     const boxClass = `Parking-Slot-Box ${isOccupied ? 'Occupied' : ''}`
-    console.log(parkingId, isOccupied);
     return (
       <Box className={boxClass}>
         <div style={{ marginBottom: '35px' }}>
@@ -159,7 +171,7 @@ const App = () => {
     setParking([...newParking])
     setInput({
       plateNumber: '',
-      carSize: '',
+      carSize: undefined,
       entryPoint: 0,
     });
   };
@@ -217,28 +229,74 @@ const App = () => {
             </>
           ) : ''}
 
-          <Button variant="contained" onClick={() => { return handleParkACar(); }}>Submit</Button>
+          <Button variant="contained" onClick={() => { return handleParkACar(); }}>Park Car</Button>
         </Box>
       </Box>
     )
   };
 
+  const setOutputValues = (e: SelectChangeEvent<IOutput>) => {
+    const findCar = parking.find((item) => {
+      return item.plateNumber === e.target.value;
+    });
+    const newOutput = {
+      ...output,
+      plateNumber: findCar?.plateNumber,
+    } as IOutput;
+    setOutput(newOutput);
+  };
+
+  const handleSetHours = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const inputtedHours = Math.ceil(Number(e.target.value))
+    const newOutput = {
+      ...output,
+      hours: inputtedHours,
+    } as IOutput;
+    setOutput(newOutput);
+  }
+
+  React.useEffect(() => {
+    console.log(output);
+  }, [output])
+
   const CheckOutCar = () => {
+    const parkedCars = parking.filter((item) => {
+      return item.isOccupied === true;
+    });
     return (
       <Box className='Car-Input-Output'>
         <Typography className="InputOutputLabels" variant="h4">Checkout a Car</Typography>
-        <TextField id="outlined-basic" label="Car Plate #" variant="outlined" />
-        <TextField id="outlined-basic" label="Hours Parked" variant="outlined" />
-        <InputLabel id="demo-simple-select-standard-label">Car Size</InputLabel>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <Select
-            label="Size"
-          >
-            <MenuItem value="SP">SP</MenuItem>
-            <MenuItem value="MP">MP</MenuItem>
-            <MenuItem value="LP">LP</MenuItem>
-          </Select>
-        </FormControl>
+        <Box display="flex" gap="10px" sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel>Choose Car</InputLabel>
+            <Select
+              value={input.carSize}
+              onChange={(e) => { return setOutputValues(e as unknown as SelectChangeEvent<IOutput>) }}
+              label="car"
+            >
+              {
+                parkedCars.map((item) => {
+                  return (
+                    <MenuItem value={item.plateNumber}>{item.plateNumber}</MenuItem>
+                  );
+                })
+              }
+            </Select>
+          </FormControl>
+        </Box>
+        <Box display="flex" flexDirection="column" gap="15px">
+          {output.plateNumber !== '' ? (
+            <>
+              <Typography textAlign="start">Car plate #: {output.plateNumber}</Typography>
+              <TextField
+                placeholder="Enter # of hours parked"
+                onChange={(e) => { return handleSetHours(e) }}
+                value={output.hours}
+              />
+            </>
+          ) : ''}
+          <Button variant="contained" onClick={() => { return handleParkACar(); }}>Checkout Car</Button>
+        </Box>
       </Box>
     )
   };
