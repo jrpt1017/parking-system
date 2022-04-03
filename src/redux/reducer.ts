@@ -57,7 +57,6 @@ export const parkingReducer = (state: IParkingReducer = initState, action: AnyAc
 
     case Actions.PARK_CAR: {
       const { parkingId, plateNumber } = action.payload;
-      console.log(parkingId, plateNumber)
       const newParking = [...state.parking];
       const findParkingSlot = newParking.find((item) => {
         return parkingId === item.parkingId;
@@ -71,11 +70,21 @@ export const parkingReducer = (state: IParkingReducer = initState, action: AnyAc
       }
     }
 
-    case 'SET_INPUT':
-      return initState;
+    case Actions.UNPARK_CAR: {
+      const parkingId = action.payload;
+      const newParking = [...state.parking];
+      console.log(parkingId)
+      const findParkingSlot = newParking.find((item) => {
+        return parkingId === item.parkingId;
+      });
+      findParkingSlot!.isOccupied = false;
+      findParkingSlot!.plateNumber = '';
 
-    case 'SET_OUTPUT':
-      return initState;
+      return {
+        ...state,
+        parking: newParking,
+      }
+    }
 
     default: return initState;
   }

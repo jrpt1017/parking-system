@@ -2,20 +2,22 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 
-import { IOutput } from '../types';
 import { IAppState } from '../redux/store';
+import { unParkACar } from '../redux/action';
+import { IOutput, PSlotSize } from '../types';
 
 
 const UnparkACar = () => {
+  const dispatch = useDispatch();
+
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
   const [totalPrice, setTotalPrice] = React.useState(0)
 
   // Output
   const [output, setOutput] = React.useState<IOutput>({
     plateNumber: '',
-    carSize: undefined,
-    hours: undefined,
-    parkingSlotSize: undefined,
+    hours: 0,
+    parkingSlotSize: PSlotSize.SP,
   });
 
   const parkedCars = parking.filter((item) => {
@@ -71,6 +73,14 @@ const UnparkACar = () => {
       }
     }
     setTotalPrice(price);
+
+    const parkingData = parkedCars.find((item) => {
+      return item.plateNumber === output.plateNumber;
+    });
+    console.log(parkingData);
+    if (parkingData && parkingData.parkingId) {
+      dispatch(unParkACar(parkingData!.parkingId))
+    }
   };
 
   return (
@@ -87,7 +97,9 @@ const UnparkACar = () => {
             {
               parkedCars.map((item) => {
                 return (
+                  // <React.Fragment key={item.plateNumber}>
                   <MenuItem value={item.plateNumber}>{item.plateNumber}</MenuItem>
+                  // </React.Fragment>
                 );
               })
             }

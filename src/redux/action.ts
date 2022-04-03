@@ -1,6 +1,6 @@
 import React from 'react';
 import { Actions } from '../redux/actionTypes'
-import { IParking, ParkingSlotSize } from '../types'
+import { CarSize, IParking, ParkingSlotSize } from '../types'
 
 export const setParkingArea = (slot: number | undefined, entryPoint: number | undefined, parking: IParking[]) => {
   return {
@@ -39,3 +39,10 @@ export const parkACar = (parkingId: number, plateNumber: string) => {
     }
   }
 };
+
+export const unParkACar = (parkingId: number) => {
+  return {
+    type: Actions.UNPARK_CAR,
+    payload: parkingId,
+  }
+}

@@ -8,7 +8,6 @@ export interface IInput {
 
 export interface IOutput {
   plateNumber: string,
-  carSize: CarSize | undefined,
   hours: number | undefined,
   parkingSlotSize: ParkingSlotSize | undefined,
 }

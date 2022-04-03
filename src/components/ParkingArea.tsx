@@ -5,11 +5,16 @@ import { IAppState } from '../redux/store'
 import { IParking } from '../types'
 import ParkingSlot from './ParkingSlot'
 import ParkACar from './ParkACar'
+import UnparkACar from './UnparkACar';
 
 const ParkingArea = () => {
   const [isClicked, setIsClicked] = useState(false);
 
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
+
+  const isParkingOccupied = parking.some((item) => {
+    return item.isOccupied === true;
+  });
 
   return (
     <>
@@ -31,6 +36,7 @@ const ParkingArea = () => {
         {isClicked ? 'Edit Parking Area' : 'Create Parking Area'}
       </Button>
       {isClicked && <ParkACar />}
+      {isClicked && isParkingOccupied && <UnparkACar />}
     </>
   )
 };
