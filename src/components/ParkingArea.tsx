@@ -4,15 +4,12 @@ import { Box, Button } from '@mui/material';
 import { IAppState } from '../redux/store'
 import { IParking } from '../types'
 import ParkingSlot from './ParkingSlot'
+import ParkACar from './ParkACar'
 
 const ParkingArea = () => {
   const [isClicked, setIsClicked] = useState(false);
 
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
-
-  const handleCreateParkingArea = () => {
-
-  }
 
   return (
     <>
@@ -30,7 +27,10 @@ const ParkingArea = () => {
           })
         }
       </Box>
-      <Button variant="contained" onClick={() => { return setIsClicked(!isClicked) }}>Create Parking Area</Button>
+      <Button variant="contained" onClick={() => { return setIsClicked(!isClicked) }}>
+        {isClicked ? 'Edit Parking Area' : 'Create Parking Area'}
+      </Button>
+      {isClicked && <ParkACar />}
     </>
   )
 };
