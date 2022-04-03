@@ -30,7 +30,7 @@ const initState: IParkingReducer = {
 
 export const parkingReducer = (state: IParkingReducer = initState, action: AnyAction) => {
   switch (action.type) {
-    case Actions.SET_PARKING_AREA:
+    case Actions.SET_PARKING_AREA: {
       const { slots, entryPoint, parking } = action.payload;
       return {
         ...state,
@@ -38,8 +38,9 @@ export const parkingReducer = (state: IParkingReducer = initState, action: AnyAc
         entryPoint,
         parking,
       };
+    }
 
-    case Actions.UPDATE_PARKING_SIZE:
+    case Actions.UPDATE_PARKING_SIZE: {
       const { parkingId, size } = action.payload;
 
       // Find the parking then update the size
@@ -52,6 +53,23 @@ export const parkingReducer = (state: IParkingReducer = initState, action: AnyAc
         ...state,
         parking: newParking,
       }
+    }
+
+    case Actions.PARK_CAR: {
+      const { parkingId, plateNumber } = action.payload;
+      console.log(parkingId, plateNumber)
+      const newParking = [...state.parking];
+      const findParkingSlot = newParking.find((item) => {
+        return parkingId === item.parkingId;
+      });
+      findParkingSlot!.plateNumber = plateNumber;
+      findParkingSlot!.isOccupied = true;
+
+      return {
+        ...state,
+        parking: newParking,
+      }
+    }
 
     case 'SET_INPUT':
       return initState;

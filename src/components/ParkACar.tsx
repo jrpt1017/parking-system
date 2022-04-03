@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { IAppState } from '../redux/store';
+import { parkACar } from '../redux/action'
 import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 
-import { IInput, ParkingSlotSize, IParking } from '../types';
+import { IInput, ParkingSlotSize, IParking, PSlotSize, CarSize } from '../types';
 
 const ParkACar = () => {
+  const dispatch = useDispatch();
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
 
   // Input states
   const [input, setInput] = useState<IInput>({
     plateNumber: '',
-    carSize: undefined,
+    carSize: CarSize.S,
     entryPoint: 0,
   });
-  const [nearestSlot, setNearestSlot] = useState<undefined | IParking>(undefined)
+
+  const [nearestSlot, setNearestSlot] = useState<undefined | IParking>({
+    parkingId: 0,
+    entryPoint: 0,
+    slot: 0,
+    plateNumber: '',
+    size: PSlotSize.SP,
+    isOccupied: false,
+  })
 
   const getAvailableParking = () => {
     switch (input.carSize) {
@@ -52,16 +62,12 @@ const ParkACar = () => {
 
   const handleParkACar = () => {
     // Update values of parking variable. Set parking.
-    const newParking = [...parking];
-    const findParkingSlot = newParking.find((item) => {
-      return nearestSlot!.parkingId === item.parkingId;
-    });
-    findParkingSlot!.plateNumber = input.plateNumber;
-    findParkingSlot!.isOccupied = true;
-    // setParking([...newParking])
+    if (nearestSlot && nearestSlot.parkingId) {
+      dispatch(parkACar(nearestSlot.parkingId, input.plateNumber))
+    }
     setInput({
       plateNumber: '',
-      carSize: undefined,
+      carSize: CarSize.S,
       entryPoint: 0,
     });
   };

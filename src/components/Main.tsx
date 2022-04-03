@@ -22,7 +22,7 @@ const Main = () => {
   const handleOnClick = () => {
     let parkingObj: IParking;
     const parkingArr: IParking[] = [];
-    let id = 0;
+    let id = 1;
     for (let i = 1; i <= entryPoint!; i++) {
       for (let j = 1; j <= slot!; j++) {
         parkingObj = {

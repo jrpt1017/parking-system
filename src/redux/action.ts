@@ -29,3 +29,13 @@ export const updateParkingSize = (parkingId: number, size: ParkingSlotSize) => {
     },
   }
 };
+
+export const parkACar = (parkingId: number, plateNumber: string) => {
+  return {
+    type: Actions.PARK_CAR,
+    payload: {
+      parkingId,
+      plateNumber,
+    }
+  }
+};

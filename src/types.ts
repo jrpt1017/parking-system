@@ -1,5 +1,4 @@
 export type ParkingSlotSize = 'SP' | 'MP' | 'LP';
-export type CarSize = 'S' | 'M' | 'L';
 
 export interface IInput {
   plateNumber: string,
@@ -27,4 +26,10 @@ export enum PSlotSize {
   SP = 'SP',
   MP = 'MP',
   LP = 'LP'
+}
+
+export enum CarSize {
+  S = 'S',
+  M = 'M',
+  L = 'L',
 }
