@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Button, Box, Typography } from '@mui/material';
+import { TextField, Button, Box, Typography, AppBar } from '@mui/material';
 import { setParkingArea } from '../redux/action'
 import { IOutput, IParking, PSlotSize, IInput } from '../types';
 import ParkingArea from './ParkingArea';
@@ -42,8 +42,10 @@ const Main = () => {
 
   return (
     <>
-      <Typography>Parking Systems</Typography>
-      <Box display="flex" justifyContent="center" style={{ gap: '10px' }}>
+      <AppBar position="static" color="primary" style={{ padding: '20px' }}>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>Parking Systems</Typography>
+      </AppBar>
+      <Box display="flex" justifyContent="center" style={{ gap: '10px', marginTop: '100px' }}>
         <TextField
           placeholder="Enter number of entry points"
           onChange={(e) => { return handleSetEntryPoint(e) }}

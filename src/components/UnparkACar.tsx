@@ -77,10 +77,17 @@ const UnparkACar = () => {
     const parkingData = parkedCars.find((item) => {
       return item.plateNumber === output.plateNumber;
     });
-    console.log(parkingData);
+
     if (parkingData && parkingData.parkingId) {
       dispatch(unParkACar(parkingData!.parkingId))
     }
+
+    setOutput({
+      plateNumber: '',
+      hours: 0,
+      parkingSlotSize: PSlotSize.SP,
+    });
+    setTotalPrice(0);
   };
 
   return (
@@ -93,13 +100,12 @@ const UnparkACar = () => {
             value={output.plateNumber}
             onChange={(e) => { return setOutputValues(e as unknown as SelectChangeEvent<IOutput>) }}
             label="car"
+            disabled={parkedCars.length === 0}
           >
             {
               parkedCars.map((item) => {
                 return (
-                  // <React.Fragment key={item.plateNumber}>
                   <MenuItem value={item.plateNumber}>{item.plateNumber}</MenuItem>
-                  // </React.Fragment>
                 );
               })
             }
@@ -117,7 +123,14 @@ const UnparkACar = () => {
             />
           </>
         ) : ''}
-        <Button variant="contained" onClick={() => { return handleCheckOutCar(); }}>Checkout Car</Button>
+        <Button
+          variant="contained"
+          onClick={() => { return handleCheckOutCar(); }}
+          style={{ marginTop: '50px' }}
+          disabled={parkedCars.length === 0}
+        >
+          Checkout Car
+          </Button>
         <Typography textAlign="start">Total Price: Php. {totalPrice}</Typography>
       </Box>
     </Box>

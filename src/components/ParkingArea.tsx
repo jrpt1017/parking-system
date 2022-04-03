@@ -12,10 +12,6 @@ const ParkingArea = () => {
 
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
 
-  const isParkingOccupied = parking.some((item) => {
-    return item.isOccupied === true;
-  });
-
   return (
     <>
       <Box display="flex" gap="100px" flexWrap="wrap" justifyContent="center" style={{ marginTop: '50px' }}>
@@ -32,11 +28,15 @@ const ParkingArea = () => {
           })
         }
       </Box>
-      <Button variant="contained" onClick={() => { return setIsClicked(!isClicked) }}>
-        {isClicked ? 'Edit Parking Area' : 'Create Parking Area'}
-      </Button>
-      {isClicked && <ParkACar />}
-      {isClicked && isParkingOccupied && <UnparkACar />}
+      {parking.length !== 0 && (
+        <Button variant="contained" onClick={() => { return setIsClicked(!isClicked) }} style={{ margin: 'auto', display: 'block', marginTop: '100px', marginBottom: '100px' }}>
+          {isClicked ? 'Edit Parking Area' : 'Create Parking Area'}
+        </Button>
+      )}
+      <Box display="flex" gap="50px" style={{ margin: '100px' }}>
+        {isClicked && <ParkACar />}
+        {isClicked && <UnparkACar />}
+      </Box>
     </>
   )
 };

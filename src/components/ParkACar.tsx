@@ -108,7 +108,13 @@ const ParkACar = () => {
               </Select>
             </FormControl>
           </Box>
-          <Button variant="outlined" onClick={() => { return handleFindNearestSlot(); }}>Find Nearest Slot</Button>
+          <Button
+            variant="outlined"
+            onClick={() => { return handleFindNearestSlot(); }}
+            disabled={input.entryPoint === 0}
+          >
+            Find Nearest Slot
+          </Button>
         </Box>
         {nearestSlot && (
           <>
@@ -122,7 +128,7 @@ const ParkACar = () => {
               variant="outlined"
               onChange={(e) => { return setInputValues(e) }}
             />
-            <Button variant="contained" onClick={() => { return handleParkACar(); }}>Park Car</Button>
+            <Button variant="contained" onClick={() => { return handleParkACar(); }} disabled={input.plateNumber === ''}>Park Car</Button>
           </>
         )}
       </Box>
