@@ -1,10 +1,24 @@
+import { useSelector, useDispatch } from 'react-redux';
+import { IAppState } from '../redux/store';
 import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
-import { IParking } from '../types'
+
+import { setParkingArea, updateParkingSize } from '../redux/action';
+import { IParking, ParkingSlotSize } from '../types'
 
 
 const ParkingSlot: React.FC<IParking> = (props: IParking) => {
+  const dispatch = useDispatch();
+
   const { entryPoint, slot, plateNumber, parkingId, size, isOccupied } = props;
-  const boxClass = `Parking-Slot-Box ${isOccupied ? 'Occupied' : ''}`
+  const boxClass = `Parking-Slot-Box ${isOccupied ? 'Occupied' : ''}`;
+
+  const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
+
+
+  const handleChangeParkingSize = (id: number, e: SelectChangeEvent<IParking>) => {
+    dispatch(updateParkingSize(id, e.target.value as ParkingSlotSize))
+  }
+
   return (
     <Box className={boxClass}>
       <div style={{ marginBottom: '35px' }}>

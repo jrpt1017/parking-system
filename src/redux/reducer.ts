@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux';
-import { IOutput, IParking, PSlotSize, IInput } from '../types';
+import { IOutput, IParking, PSlotSize, IInput, ParkingSlotSize } from '../types';
 import { Actions } from './actionTypes'
 
 // const test = {
@@ -31,12 +31,27 @@ const initState: IParkingReducer = {
 export const parkingReducer = (state: IParkingReducer = initState, action: AnyAction) => {
   switch (action.type) {
     case Actions.SET_PARKING_AREA:
+      const { slots, entryPoint, parking } = action.payload;
       return {
         ...state,
-        slots: action.payload.slot,
-        entryPoint: action.payload.entryPoint,
-        parking: action.payload
+        slots,
+        entryPoint,
+        parking,
       };
+
+    case Actions.UPDATE_PARKING_SIZE:
+      const { parkingId, size } = action.payload;
+
+      // Find the parking then update the size
+      const newParking = [...state.parking];
+      newParking.find((item) => {
+        return item.parkingId === parkingId;
+      })!.size = size
+
+      return {
+        ...state,
+        parking: newParking,
+      }
 
     case 'SET_INPUT':
       return initState;

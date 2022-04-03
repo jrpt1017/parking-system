@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Button, Box } from '@mui/material';
+import { TextField, Button, Box, Typography } from '@mui/material';
 import { setParkingArea } from '../redux/action'
 import { IOutput, IParking, PSlotSize, IInput } from '../types';
+import ParkingArea from './ParkingArea';
 import '../App.css';
 
 const Main = () => {
@@ -41,7 +42,7 @@ const Main = () => {
 
   return (
     <>
-      <h1>Parking Systems</h1>
+      <Typography>Parking Systems</Typography>
       <Box display="flex" justifyContent="center" style={{ gap: '10px' }}>
         <TextField
           placeholder="Enter number of entry points"
@@ -61,6 +62,7 @@ const Main = () => {
           Submit
         </Button>
       </Box>
+      <ParkingArea />
     </>
   );
 };
