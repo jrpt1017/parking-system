@@ -1,15 +1,6 @@
 import { AnyAction } from 'redux';
-import { IOutput, IParking, PSlotSize, IInput, ParkingSlotSize } from '../types';
+import { IOutput, IParking, IInput } from '../types';
 import { Actions } from './actionTypes'
-
-// const test = {
-//   entryPoint: undefined,
-//   slot: undefined,
-//   parkingId: undefined,
-//   plateNumber: '',
-//   size: PSlotSize.SP,
-//   isOccupied: false,
-// }
 
 export interface IParkingReducer {
   parking: IParking[],

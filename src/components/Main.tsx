@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, Button, Box, Typography, AppBar } from '@mui/material';
+import { Button, Box, Typography, AppBar, FormControl, InputLabel, Input, FormHelperText } from '@mui/material';
 import { setParkingArea } from '../redux/action'
-import { IOutput, IParking, PSlotSize, IInput } from '../types';
+import { IParking, PSlotSize } from '../types';
 import ParkingArea from './ParkingArea';
 import '../App.css';
 
 const Main = () => {
   const dispatch = useDispatch();
-  const [slot, setSlot] = useState<number | undefined>(0)
-  const [entryPoint, setEntryPoint] = useState<number | undefined>(0)
+  const [slot, setSlot] = useState<number | undefined>(3)
+  const [entryPoint, setEntryPoint] = useState<number | undefined>(3)
 
   const handleSetEntryPoint = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setEntryPoint(Number(e.target.value));
@@ -40,26 +40,43 @@ const Main = () => {
     dispatch(setParkingArea(slot, entryPoint, parkingArr))
   };
 
+  const isButtonDisabled = () => {
+    if (entryPoint! < 3 || slot! < 0) {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <>
       <AppBar position="static" color="primary" style={{ padding: '20px' }}>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>Parking Systems</Typography>
       </AppBar>
       <Box display="flex" justifyContent="center" style={{ gap: '10px', marginTop: '100px' }}>
-        <TextField
-          placeholder="Enter number of entry points"
-          onChange={(e) => { return handleSetEntryPoint(e) }}
-          value={entryPoint}
-        />
-        <TextField
-          placeholder="Enter number of parking slot"
-          onChange={(e) => { return handleSetSlot(e) }}
-          value={slot}
-        />
+        <FormControl>
+          <InputLabel htmlFor="my-input">Entry points</InputLabel>
+          <Input
+            placeholder="Enter number of entry points"
+            onChange={(e) => { return handleSetEntryPoint(e) }}
+            value={entryPoint}
+            type="number"
+          />
+          <FormHelperText id="my-helper-text">Minimum value is 3.</FormHelperText>
+        </FormControl>
+        <FormControl>
+          <InputLabel htmlFor="my-input">Parking Slots</InputLabel>
+          <Input
+            placeholder="Enter number of parking slot"
+            onChange={(e) => { return handleSetSlot(e) }}
+            value={slot}
+            type="number"
+          />
+        </FormControl>
         <Button
           variant="contained"
           className=''
           onClick={handleOnClick}
+          disabled={isButtonDisabled()}
         >
           Submit
         </Button>

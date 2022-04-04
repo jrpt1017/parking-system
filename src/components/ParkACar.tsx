@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { IAppState } from '../redux/store';
 import { parkACar } from '../redux/action'
-import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
+import { TextField, Button, Box, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 
 import { IInput, ParkingSlotSize, IParking, PSlotSize, CarSize } from '../types';
 
 const ParkACar = () => {
   const dispatch = useDispatch();
   const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
+  const entrypoints = useSelector((state: IAppState) => { return state.parkingState.entryPoint });
+  const entryPointArray = Array(entrypoints).fill(0).map((e, i) => i + 1);
 
   // Input states
   const [input, setInput] = useState<IInput>({
@@ -70,10 +72,11 @@ const ParkACar = () => {
       carSize: CarSize.S,
       entryPoint: 0,
     });
+    alert('Successfully parked a car!')
   };
 
 
-  const setInputValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<ParkingSlotSize>) => {
+  const setInputValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<ParkingSlotSize | number>) => {
     const newInput = {
       ...input,
       [e.target.name]: e.target.value,
@@ -86,13 +89,26 @@ const ParkACar = () => {
       <Typography className="InputOutputLabels" variant="h4">Park a Car</Typography>
       <Box display="flex" flexDirection="column" gap="10px">
         <Box display="flex" flexDirection="row" gap="10px">
-          <TextField
-            name="entryPoint"
-            label="Entry point"
-            variant="outlined"
-            onChange={(e) => { return setInputValues(e) }}
-            value={input.entryPoint}
-          />
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Entry point</InputLabel>
+              <Select
+                name="entryPoint"
+                value={input.entryPoint}
+                onChange={(e) => { return setInputValues(e as unknown as SelectChangeEvent<number>) }}
+                label="Entry Point"
+              >
+                {
+                  entryPointArray.map((item) => {
+                    console.log(item);
+                    return (
+                      <MenuItem value={item}>{item}</MenuItem>
+                    )
+                  })
+                }
+              </Select>
+            </FormControl>
+          </Box>
           <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
               <InputLabel>Car Size</InputLabel>

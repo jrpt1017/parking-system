@@ -1,8 +1,7 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { IAppState } from '../redux/store';
-import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { Box, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 
-import { setParkingArea, updateParkingSize } from '../redux/action';
+import { updateParkingSize } from '../redux/action';
 import { IParking, ParkingSlotSize } from '../types'
 
 interface IParkingSlot extends IParking {
@@ -15,9 +14,6 @@ const ParkingSlot: React.FC<IParkingSlot> = (props: IParkingSlot) => {
 
   const { entryPoint, slot, plateNumber, parkingId, size, isOccupied, isClicked } = props;
   const boxClass = `Parking-Slot-Box ${isOccupied ? 'Occupied' : ''}`;
-
-  const parking = useSelector((state: IAppState) => { return state.parkingState.parking });
-
 
   const handleChangeParkingSize = (id: number | undefined, e: SelectChangeEvent<ParkingSlotSize>) => {
     dispatch(updateParkingSize(id!, e.target.value as ParkingSlotSize))

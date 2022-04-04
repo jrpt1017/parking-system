@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { TextField, Button, Box, createStyles, Theme, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
+import { TextField, Button, Box, InputLabel, MenuItem, Select, FormControl, SelectChangeEvent, Typography } from '@mui/material';
 
 import { IAppState } from '../redux/store';
 import { unParkACar } from '../redux/action';
@@ -62,10 +62,10 @@ const UnparkACar = () => {
     const pricePerHr = getExceedingPricePerHour();
     let price = flatRate;
     if (output.hours! > 24) {
-      // Charge 5000;
-      price += 5000;
-      const exceedingHours = output.hours! % 24 === 0 ? 1 : output.hours! % 24;
-      price = price + (pricePerHr * exceedingHours);
+      const oneDayChunk = output.hours! % 24 === 0 ? 1 : output.hours! % 24;
+      price = price + (oneDayChunk * 5000);
+      const exceedingHoursFromDayChunk = output.hours! % (oneDayChunk * 24);
+      price = price + (pricePerHr * exceedingHoursFromDayChunk);
     } else {
       if (output.hours! > 3) {
         const exceededHours = output.hours! - 3;
@@ -73,7 +73,9 @@ const UnparkACar = () => {
       }
     }
     setTotalPrice(price);
+  };
 
+  const clearValues = () => {
     const parkingData = parkedCars.find((item) => {
       return item.plateNumber === output.plateNumber;
     });
@@ -127,11 +129,18 @@ const UnparkACar = () => {
           variant="contained"
           onClick={() => { return handleCheckOutCar(); }}
           style={{ marginTop: '50px' }}
-          disabled={parkedCars.length === 0}
+          disabled={parkedCars.length === 0 || output.hours! < 1}
         >
-          Checkout Car
-          </Button>
+          Unpark Car
+        </Button>
         <Typography textAlign="start">Total Price: Php. {totalPrice}</Typography>
+        <Button
+          variant="contained"
+          style={{ width: '50%', margin: 'auto' }}
+          onClick={() => { return clearValues(); }}
+        >
+          Clear values
+        </Button>
       </Box>
     </Box>
   )
